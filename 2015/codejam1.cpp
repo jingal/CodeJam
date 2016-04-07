@@ -13,7 +13,7 @@ int dist(vector<int>& a, vector<int>& b) {
 	int y = a[1] - b[1];
 	int d = static_cast<int>(sqrt(x*x + y*y));
 
-	return (d > 3) ? 2 : d;
+	return (d >= 3) ? 2 : d;
 }
 
 bool dir(int a, int b, int c) {
