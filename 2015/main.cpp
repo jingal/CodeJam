@@ -11,10 +11,16 @@ int start(const string& input_file_name, const string& output_file_name);
 
 int main() {
 
+	//string input_file_name = "problem2.in.short";
+	//string solution_file_name = "problem2.out.short.solution";
+	//string output_file_name = "problem2.output.short.";
+	//string result_file_name = "problem2.result.short";
+
 	string input_file_name = "problem2.in.test.txt";
-	string solution_file_name = "problem2.out.test.txt";
-	string output_file_name = "problem2.out.txt";
-	string result_file_name = "problem2.result.txt";
+	string solution_file_name = "problem2.out.short.solution.txt";
+	string output_file_name = "problem2.output.test.txt";
+	string result_file_name = "problem2.result.test.txt";
+
 
 	clock_t begin, end;
 	begin = clock();        // 시간설정
