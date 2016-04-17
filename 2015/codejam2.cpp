@@ -30,11 +30,12 @@ int start(const string& input_file_name, const string& output_file_name) {
 		input >> N >> K >> W;
 
 		vector<vector<long>> points{{0,0}};
-        long left_max = 2000000000;
-        long right_max = -2000000000;
+        long left_max = 0;
+        long right_max = 0;
 		
 		input >> points[0][0] >> points[0][1];
 		left_max = points[0][0];
+		right_max = points[0][0];
 
 		for (int j = 1; j < N; j++) {			
 			vector<long> point{ 0,0 };
@@ -45,7 +46,7 @@ int start(const string& input_file_name, const string& output_file_name) {
 			}
 
 			if (point[0] > right_max) { //store right point to decrease loop
-				right_max = point[1];
+				right_max = point[0];
 			}
 
 			points.emplace_back(point);
@@ -55,33 +56,53 @@ int start(const string& input_file_name, const string& output_file_name) {
 			goto PRINT_NO;			
 		}
 
-
+		long left_min = left_max + W, right_min = right_max - W;
+		if (left_max + W >= right_max) goto PRINT_YES;
+		if (left_min >= right_min) goto PRINT_NO;
 
 		// order by y
-		sort(points.begin(), points.end(), [](const vector<long>& a, const vector<long>& b){ return a[1] < b[1]; });
+		sort(points.begin(), points.end(), [](const vector<long>& a, const vector<long>& b){ return a[1] < b[1]; });		
+		
+		int k = 0;
+		do {
+			long bottom_min = points[k][1]+W, bottom_max = points[k][1], top_min = points[N-(K-k)-1][1] - W, top_max = points[N-(K-k)-1][1];
+			if (top_max - bottom_max <= W) goto PRINT_YES;
+			if (top_min - bottom_min <= 0) goto PRINT_NO;
 
-		long left_min = left_max+W , right_min = right_max-W;
-        if (left_min >= right_min) {
-            goto PRINT_NO;
-        }
+			int bottom_min_idx = 0;
+			for (int j = k; j < N; j++) {
+				long y = points[j][1];
+				if ( y > bottom_min) {
+					bottom_min_idx = j;
+					break;
+				}
+			}
 
-        long bottom_min = points[0][1]+W, bottom_max = points[0][1], top_min = points[N-1][1] - W, top_max = points[N-1][1];
-        if (top_min <= bottom_min) {
-            goto PRINT_NO;
-        }
+			int top_min_idx = 0;
+			//for (int j = N- (K - k) -1; j >= bottom_min_idx; j--) {
+			for (int j = N - (K - k) - 1; j >= k; j--) {
+				long y = points[j][1];
+				if (y < top_min) {
+					top_min_idx = j;
+					break;
+				}
+			}
+			if (top_min_idx == 0) top_min_idx = N - (K - k) - 1 ;
 
-        
-        int ruin = 0;
-        for (int j = 0; j < N; j++) {
-            long x = points[j][0], y = points[j][1];
-            if (y >= top_min && y <= top_max) { ruin++; continue; }
-            if (y >= bottom_max && y <= bottom_min) { ruin++; continue; }
-            if (x >= left_max && x <= left_min) { ruin++; continue; }
-            if (x >= right_min && x <= right_max) { ruin++; continue; }
-        }
+			//if (bottom_min_idx > top_min_idx) goto PRINT_YES;
 
-        if (N <= ruin + K) goto PRINT_YES;
-        else goto PRINT_NO;
+			int ruin = 0;
+			for (int j = bottom_min_idx; j <= top_min_idx; j++) {
+				long x = points[j][0];
+				if (x > left_min && x < right_min) { ruin++; break; }				
+			}
+
+			//cout << "k : " << k << ", ruin : " << ruin << endl;
+			if (ruin == 0) goto PRINT_YES;
+			k++;
+		} while (k <= K);
+
+		goto PRINT_NO;
 
 	PRINT_YES : 
 		cout << "YES" << endl;

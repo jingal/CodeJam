@@ -11,15 +11,25 @@ int start(const string& input_file_name, const string& output_file_name);
 
 int main() {
 
+	//string input_file_name = "problem2.in.test.txt";
+	//string solution_file_name = "problem2.out.test.solution.txt";
+	//string output_file_name = "problem2.output.test.";
+	//string result_file_name = "problem2.result.test";
+
 	//string input_file_name = "problem2.in.short";
 	//string solution_file_name = "problem2.out.short.solution";
-	//string output_file_name = "problem2.output.short.";
+	//string output_file_name = "problem2.output.short";
 	//string result_file_name = "problem2.result.short";
 
-	string input_file_name = "problem2.in.test.txt";
-	string solution_file_name = "problem2.out.short.solution.txt";
-	string output_file_name = "problem2.output.test.txt";
-	string result_file_name = "problem2.result.test.txt";
+	//string input_file_name = "problem2.in.small.txt";
+	//string solution_file_name = "problem2.out.small.solution.txt";
+	//string output_file_name = "problem2.output.small";
+	//string result_file_name = "problem2.result.small";
+
+	string input_file_name = "problem2.in.large.txt";
+	string solution_file_name = "problem2.out.large.solution.txt";
+	string output_file_name = "problem2.output.large";
+	string result_file_name = "problem2.result.large";
 
 
 	clock_t begin, end;
@@ -49,9 +59,11 @@ int main() {
 	}
 	output_if.close();
 	
+	int src_count = src.size();
+	int dst_count = src.size();
 	int wrong_count = 0;	
-	if (src.size() == dst.size()) {
-		for (int i = 0; i < src.size(); i++) {
+	if (src_count == dst_count) {
+		for (int i = 0; i < src_count; i++) {
 			if (src[i] == dst[i]) {
 				result_of << i+1 << " CORRECT : " << src[i] << " " << dst[i] << "\n";
 			}
@@ -65,8 +77,10 @@ int main() {
 		cout << "Failed, Invalid Results, try again" << endl;
 		wrong_count++;
 	}
+	
+
 	cout << "============================================================" << endl;
-	cout << "Results : " << ((wrong_count > 0) ? "Failed" : "Success") << " [COUNT : " << wrong_count << "/" << src.size()-1 << ", Elasped Time : " << (end - begin) << "]" << endl;
+	cout << "Results : " << ((wrong_count > 0) ? "Failed" : "Success") << " [COUNT : " << src_count - wrong_count << "/" << src_count << ", Elasped Time : " << (end - begin) << "]" << endl;
 	cout << "============================================================" << endl;
 			
 	result_of.close();
