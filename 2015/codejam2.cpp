@@ -12,7 +12,17 @@ int start(const string& input_file_name, const string& output_file_name) {
 	std::ifstream input(input_file_name);
 	std::ofstream output(output_file_name);
 
-	int T;
+	if (!input.is_open()) {
+		cout << "invalid file name : " << input_file_name << endl;
+		return -1;
+	}
+
+	if (!output.is_open()) {
+		cout << "invalid file name : " << output_file_name << endl;
+		return -1;
+	}
+
+	int T = 0;
 	input >> T;
 	
 	for (int i = 0; i < T; i++) {
@@ -20,29 +30,22 @@ int start(const string& input_file_name, const string& output_file_name) {
 		input >> N >> K >> W;
 
 		vector<vector<long>> points{{0,0}};
-		vector<long> left{0,0};
-		vector<long> right{0,0};
+		long left_max = 0;
+		long right_max = 0;
 		
-		input >> left[0] >> left[1];
-
-		right[0] = left[0];
-		right[1] = left[1];
-		
-		points[0][0] = left[0];
-		points[0][1] = left[1];
+		input >> points[0][0] >> points[0][1];
+		left_max = points[0][0];
 
 		for (int j = 1; j < N; j++) {			
 			vector<long> point{ 0,0 };
 			input >> point[0] >> point[1];
 
-			if (point[0] < left[0]) { //store left point to decrease loop
-				left[0] = point[0];
-				left[1] = point[1];
+			if (point[0] < left_max) { //store left point to decrease loop
+				left_max = point[0];				
 			}
 
-			if (point[0] > right[0]) { //store right point to decrease loop
-				right[0] = point[0];
-				right[1] = point[1];
+			if (point[0] > right_max) { //store right point to decrease loop
+				right_max = point[1];
 			}
 
 			points.emplace_back(point);
@@ -52,55 +55,67 @@ int start(const string& input_file_name, const string& output_file_name) {
 			goto PRINT_NO;			
 		}
 
+//		if (N - K < 5) {
+//			goto PRINT_YES;
+//		}
+
 		// order by y
 		sort(points.begin(), points.end(), [](const vector<long>& a, const vector<long>& b){ return a[1] < b[1]; });
 
+		int included_index = 0;
+		long left_min = left_max+W , right_min = right_max-W;
 		int bottom_min = 0, bottom_max = 0, top_min = 0, top_max = 0;
 
-		for (int j = N-K-1; j > 1; j--) {
-			if (points[j][1] - points[j-1][1] > W) {
-				top_min = j;
+		long top_sum = 0, top_avr = 0;
+		for (int j = N - 1 - K, k = 0; j >= 0; j--, k++) {
+			if (points[N - K - 1][1] - points[j][1] <= W) {				
+				top_sum += points[j][1];
+			}
+			else {
+				top_min = j+1;
+				top_avr = top_sum / k;
 				break;
 			}
 		}
 
-		for (int j = top_min+1; j < N; j++) {
-			if (points[top_min][1] + W < points[j][1]) {
-				top_max = j-1;
-				break;
-			}
-
-			if (j == N) top_max = N-1;
-		}
-
-		for (int j = K+1; j < N; j++) {
-			if (points[K][1] + W < points[j][1]) {
-				bottom_max = j-1;
-				break;
+		if (top_min == N-1) top_max = top_min;
+		else {
+			for (int j = N - 1 - K, k = 0; j >= 0; j--, k++) {
+				if (points[N - K - 1][1] - points[j][1] <= W) {
+					top_sum += points[j][1];
+				}
+				else {
+					top_min = j + 1;
+					top_avr = top_sum / k;
+					break;
+				}
 			}
 		}
 
-		for (int j = bottom_max-1; j >= 0; j--) {			
-			if (points[bottom_max][1] - W > points[j][1]) {
-				bottom_min = j+1;
+		int bottom_k = K - (N - 1 - top_max);
+		for (int j = bottom_k-1; j >= 0; j--) {
+			if (points[bottom_k][1] - points[j][1] <=W && points[bottom_k][1] - points[j-1][1] > W) {
+				bottom_min = j;
 				break;
 			}
-			if (j == 0) bottom_min = 0;
+		}
+		
+		for (int j = bottom_min+1; j < top_min; j++) {
+			if ( points[j][1] - points[bottom_min][1] <= W && points[j + 1][1] - points[bottom_min][1] > W && points[j][0] > left_max && points[j][0] < right_min) {
+				bottom_max = j;
+				break;
+			}
 		}
 
-		int k_sum = (bottom_min) + (N - top_max - 1);
-		if (k_sum == K) { //y 조건은 충족하였으므로, x 조건에 대해서 만족하는지만 확인, 내부 사각형에 포함여부만 확인
-			for (int j = bottom_max+1; j < top_min; j++) {				
-				if (points[j][0] > left[0] + W && points[j][0] < right[0] - W) {
+		if (bottom_max == 0) bottom_max = bottom_min;
+
+		if (bottom_min == 0 && top_max == N-1) {
+			for (int j = top_min; j < top_max; j++) {
+				if (points[j][0] > left_max && points[j][0] < right_min) {
 					goto PRINT_NO;
 					break;
 				}
 			}
-
-			goto PRINT_YES;
-		}
-		else {
-			goto PRINT_NO;
 		}
 
 	PRINT_YES : 
