@@ -8,7 +8,7 @@
 
 #define _DEBUG
 
-int calcMinimum(const vector<tuple<int, int>>& pairs, const int M);
+int get_distance(const vector<tuple<int, int>>& pairs, const int M);
 void print_result(const clock_t& begin, const clock_t& end);
 
 using namespace std;
