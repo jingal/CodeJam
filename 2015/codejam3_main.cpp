@@ -6,10 +6,7 @@
 #include <time.h>
 #include <tuple>
 
-#define _DEBUG
-
-int get_distance(const vector<tuple<int, int>>& pairs, const int M);
-void print_result(const clock_t& begin, const clock_t& end);
+#define _LOCAL_DEBUG
 
 using namespace std;
 
@@ -17,6 +14,12 @@ const string input_file_name = "codejam3.in.small.txt";
 const string output_file_name = "codejam3.out.small.txt";
 const string solution_file_name = "codejam3.solution.small.txt";
 const string result_file_name = "codejam3.result.small.txt";
+
+
+extern vector<tuple<int, int>> gPairs;
+
+void print_result(const clock_t& begin, const clock_t& end);
+extern int get_distance(const int N);
 
 int main() {
 
@@ -33,24 +36,39 @@ int main() {
 
 	int T = 0;
 	input_if >> T;
+	#ifdef _LOCAL_DEBUG
+	cout << "T : " << T << endl;
+	#endif //_LOCAL_DEBUG
 	
 	for (int i = 0; i < T; i++) {
 		int N, M;
 		input_if >> N >> M;
 
-		vector<tuple<int, int>> pairs;
+		#ifdef _LOCAL_DEBUG
+		cout << "N : " << N << ", M : " << M << endl;
+		#endif //_LOCAL_DEBUG
+
+		gPairs.clear();
+		//vector<tuple<int, int>> pairs;
 		for (int j = 0; j < M; j++) {
 			int P, Q;
 			input_if >> P >> Q;
 
-			auto pair = make_tuple(P, Q);
-			pairs.emplace_back(pair);
+			if (P > Q) {
+				P = P^Q; Q = P^Q; P = P^Q;
+			}
+			#ifdef _LOCAL_DEBUG
+			cout << "P : " << P << ", Q : " << Q << endl;
+			#endif //_LOCAL_DEBUG
+
+			auto pair = make_tuple(P-1, Q-1);
+			gPairs.emplace_back(pair);
 		}
 
-		int min = calcMinimum(pairs, M);
+		int min = get_distance(N);
 
 		cout << min << endl;
-		output_if << min;
+		output_if << min << endl;
 	}
 
 	end = clock();
@@ -58,9 +76,9 @@ int main() {
 	input_if.close();
 	output_if.close();
 
-	#ifdef _DEBUG
+	#ifdef _LOCAL_DEBUG
 	print_result(begin, end);
-	#endif //_DEBUG
+	#endif //_LOCAL_DEBUG
 
 	return 0;
 }
