@@ -79,9 +79,9 @@ int main() {
 	}
 	
 
-	cout << "============================================================" << endl;
-	cout << "Results : " << ((wrong_count > 0) ? "Failed" : "Success") << " [COUNT : " << src_count - wrong_count << "/" << src_count << ", Elasped Time : " << (end - begin) << "]" << endl;
-	cout << "============================================================" << endl;
+	//cout << "============================================================" << endl;
+	//cout << "Results : " << ((wrong_count > 0) ? "Failed" : "Success") << " [COUNT : " << src_count - wrong_count << "/" << src_count << ", Elasped Time : " << (end - begin) << "]" << endl;
+	//cout << "============================================================" << endl;
 			
 	result_of.close();
 	return 0;
