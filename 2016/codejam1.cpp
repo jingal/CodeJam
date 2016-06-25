@@ -9,27 +9,33 @@
 
 using namespace std;
 
-void FindMaxChild(int ancestor, std::vector<pair<int, int>>& family, int depth, std::vector<int>& k) {
+void FindMaxChild(int ancestor, std::vector<pair<bool, pair<int, int>>>& family, int depth, std::vector<int>& k) {
 
     if (family.empty()) {
         if (k[ancestor - 1] < depth) k[ancestor-1] = depth;
-        cout << "ancestor1" << ancestor << ", depth1 " << depth << endl;
+		//cout << "idx " << ancestor - 1 << ", depth " << k[ancestor - 1] << endl;
         return;
     }
 
-    for (int i = 0; i < family.size(); i++) {
-        cout << "first" << family[i].first << ", second " << family[i].second << endl;
-        if (family[i].first == ancestor) {
-            auto n = family[i];
-            family.erase(family.begin() + i);
-            cout << "ancestor" << n.first << ", child " << n.second << endl;
-            FindMaxChild(n.second, family, depth+1, k);
-            //family.push_back(n);
-        }
+	//cout << "family size : " << family.size() << endl;
+	for (auto it = family.begin(); it != family.end(); ) {
+		auto& pnode = *it;
+		auto& node = pnode.second;
+
+        //cout << "[ancestor : " << ancestor << "] first " << node.first << ", second " << node.second << endl;
+				
+        if (!pnode.first && node.first == ancestor) {
+            //cout << "first " << node.first << ", second " << node.second << endl;
+			pnode.first = true;
+            FindMaxChild(node.second, family, depth+1, k);
+		}
+		else {
+			++it;
+		}
     }
 
     if (k[ancestor - 1] < depth) k[ancestor - 1] = depth;
-    cout << "ancestor2" << ancestor << ", depth2" << depth << endl;
+    //cout << "idx " << ancestor - 1 << ", depth " << k[ancestor - 1] << endl;
 }
 
 int max_element(std::vector<int>& k) {
@@ -58,8 +64,8 @@ int min_element(std::vector<int>& k) {
 
 int main() 
 {
-	std::ifstream input("problem_1_Set1.in");
-    std::ofstream output("problem_1_Set1.out");
+	std::ifstream input("problem_1_Set2.in");
+    std::ofstream output("problem_1_Set2.out");
 
     if (!output.is_open())
     {
@@ -74,7 +80,7 @@ int main()
 		int N;
 		input >> N;
 
-        std::vector<pair<int, int>> family;
+        std::vector<pair<bool, pair<int,int>>> family;
         std::vector<int> K(N);
 
         // Input
@@ -83,11 +89,11 @@ int main()
 			input >> p >> c;
             K[c-1]++;
             pair<int, int> node(p, c);
-            family.push_back(node);
+            family.push_back(pair<bool, pair<int, int>>(false, node));
 		}
 
         int ancestor = min_element(K);
-        cout << "ancesotr :" << ancestor+1 << endl;
+        //cout << "ancesotr :" << ancestor+1 << endl;
 
         std::vector<int> L(N);
         FindMaxChild(ancestor+1, family, 1, L);
